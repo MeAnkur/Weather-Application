@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #form{
+            margin:20px;
+            text-align: center;
+        }
+        #weather{
+            margin: auto;
+            /* border:1px solid green; */
+            width:90%;
+            height: 500px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #container{
+            /* border:1px solid red; */
+            margin:20px;
+        }
+        iframe{
+            width:60%;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="form">
+        <form>
+            <input id="city" type="city" placeholder="City Name"/>
+            <button type="button" onclick="getWeather()">Search</button>
+        </form>        
+    </div>
+    <div id="weather">
+        <div id="container"></div>
+    </div>
+    
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+
+
+// `api.openweathermap.org/data/2.5/weather?q=${city}&appid=ae09b37f466e24572a7042d77303c1fc`
+async function getWeather()
+{
+    try{
+
+        let city = document.getElementById("city").value;
+
+        let result = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ae09b37f466e24572a7042d77303c1fc&units=metric`);
+        let data =await result.json();
+        displayWeather(data)
+        console.log(data)
+    }
+    catch(e){
+        console.log(e);
+    }
+}
+
+function displayWeather(data)
+{
+    document.getElementById("container").innerHTML="";
+    let div = document.createElement("div");
+    
+    let name =document.createElement("h2");
+    name.innerHTML = data.name;
+
+    let min_temperature = document.createElement("h3");
+    min_temperature.innerHTML = "Minimum temperature : "+data.main.temp_min;
+    let max_temperature = document.createElement("h3");
+    max_temperature.innerHTML = "Maximum temperature : "+data.main.temp_max;
+
+    let wind = document.createElement("h4");
+    wind.innerHTML = "Wind Speed : " + data.wind.speed;
+
+    let clouds = document.createElement("h4");
+    clouds.innerHTML = "Cloud count : "+data.clouds.all;
+
+    let sunshine = document.createElement("h4");
+    //sunshine.innerHTML = data.sys.sunrise;
+     sunshine.innerHTML = `Sunrise : ${window.moment(data.sys.sunrise*1000).format('HH:mm a')}`;
+
+    let sunset = document.createElement("h4");
+   // sunset.innerHTML = data.sys.sunset;
+    sunset.innerHTML = `Sunset : ${window.moment(data.sys.sunset*1000).format('HH:mm a')}`;
+
+    let weather =document.createElement("h3");
+    weather.innerHTML = data.weather[0].description;
+
+    div.append(name,min_temperature,max_temperature,wind,clouds,sunshine,sunset,weather)
+
+    let iframe = document.createElement("iframe");
+    iframe.src =`https://maps.google.com/maps?q=${data.name}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+
+    document.getElementById("weather").append(iframe);
+    container.append(div);
+
+}
+
+
+</script>
